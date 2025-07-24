@@ -1,0 +1,234 @@
+/* 导入一个模拟二次元字体风格的Google Font */
+/* 如果字体加载失败，可能会导致一些显示问题，这里保留以备用 */
+@import url('https://fonts.com/css2?family=Noto+Sans+TC:wght@500;700&family=Mochiy+Pop+One&display=swap');
+
+body {
+    font-family: 'Noto Sans TC', sans-serif;
+    margin: 0;
+    overflow: hidden; /* 防止滚动条出现 */
+    background-color: #1a1a2e;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+#game-container {
+    position: relative;
+    width: 960px;
+    height: 720px;
+    background-color: #2e022b;
+    border: 5px solid #ff4d4d;
+    box-shadow: 0 0 30px rgba(255, 77, 77, 0.6), 0 0 15px rgba(255, 77, 77, 0.4) inset;
+    border-radius: 15px;
+    overflow: hidden; /* 确保内容不会溢出容器 */
+}
+
+#background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    /* 替换为你的默认背景图片，这里使用了一个示例 */
+    background-image: url('http://scpsandboxcn.wikidot.com/local--files/meowait/indo-european');
+    background-size: cover;
+    background-position: center;
+    transition: background-image 0.8s ease-in-out;
+    z-index: 0;
+}
+
+/* 角色立绘容器 */
+#character-sprites-container {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    z-index: 1;
+    pointer-events: none; /* 允许点击穿透到背景和对话框 */
+}
+
+#character-sprites-container img {
+    position: absolute;
+    bottom: 0;
+    width: 400px; /* 示例宽度，根据你的立绘图片和需求调整 */
+    height: 600px; /* 示例高度，根据你的立绘图片和需求调整 */
+    object-fit: contain; /* 保持图片比例 */
+    
+    opacity: 0; /* 默认隐藏所有立绘 */
+    transition: opacity 0.5s ease-in-out, transform 0.3s ease-in-out;
+    filter: drop-shadow(0 0 8px rgba(0, 0, 0, 0.5));
+    pointer-events: auto; /* 恢复鼠标事件，以便JS可以操作 */
+}
+
+/* 特定角色立绘的位置调整 */
+#charA_sprite {
+    left: 20%;
+    transform: translateX(-50%); /* 保持居中对齐 */
+}
+
+#charB_sprite {
+    left: 80%;
+    transform: translateX(-50%); /* 保持居中对齐 */
+}
+
+/* 活跃角色的样式：完全不透明 */
+.active-character {
+    opacity: 1 !important;
+    transform: translateX(-50%) scale(1.05);
+    filter: drop-shadow(0 0 15px rgba(255, 255, 255, 0.7)) drop-shadow(0 0 8px rgba(0, 0, 0, 0.5));
+}
+
+/* 非活跃但显示中的角色样式：半透明 */
+.dimmed-character {
+    opacity: 0.5;
+    transform: translateX(-50%) scale(1);
+    filter: drop-shadow(0 0 8px rgba(0, 0, 0, 0.5));
+}
+
+
+#dialogue-box {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    min-height: 160px;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.9), rgba(0, 0, 0, 0.6));
+    border-top: 3px solid #6a0572;
+    color: #f0f0f0;
+    padding: 25px 30px;
+    box-sizing: border-box;
+    z-index: 2;
+    border-radius: 0 0 15px 15px;
+    box-shadow: 0 -5px 20px rgba(0, 0, 0, 0.5);
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+}
+
+#speaker-name {
+    font-family: 'Mochiy Pop One', cursive; /* 确保这个字体加载成功，否则会回退到sans-serif */
+    font-size: 1.5em;
+    color: #ffd700;
+    margin-bottom: 10px;
+    padding: 5px 15px;
+    background-color: rgba(106, 5, 114, 0.8);
+    border-radius: 5px;
+    display: inline-block;
+    box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.4);
+    text-shadow: 2px 2px 3px rgba(0, 0, 0, 0.6);
+}
+
+#dialogue-text {
+    font-size: 1.2em;
+    line-height: 1.8;
+    margin-bottom: 20px;
+}
+
+/* --- 功能按钮样式 --- */
+#game-controls {
+    position: absolute;
+    /* 尝试稍微调整位置，确保在边界内 */
+    top: 15px; /* 离顶部稍近 */
+    right: 15px; /* 离右侧稍近 */
+    z-index: 10; /* 确保在最上层 */
+    display: flex;
+    gap: 10px;
+}
+
+#game-controls button {
+    padding: 10px 18px;
+    background: linear-gradient(to right, #4B0082, #800080); /* 深紫到中紫 */
+    color: white;
+    border: 3px solid #2e004a; /* 更深更饱和的边框颜色 */
+    border-radius: 0px; /* 完全取消圆角，棱角分明 */
+    cursor: pointer;
+    font-family: 'Noto Sans TC', sans-serif; /* 统一字体或使用更普遍的 */
+    font-size: 0.9em;
+    font-weight: bold;
+    box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.6), 0 0 15px rgba(128, 0, 128, 0.4); /* 深色阴影加紫色光晕 */
+    transition: all 0.2s ease-in-out;
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8);
+    text-transform: uppercase; /* 文本大写，增加硬朗感 */
+    letter-spacing: 1px; /* 字母间距 */
+    white-space: nowrap; /* 防止按钮文字换行 */
+}
+
+#game-controls button:hover {
+    background: linear-gradient(to right, #6A00A0, #A000A0); /* 鼠标悬停时颜色略变亮 */
+    transform: translateY(-2px);
+    box-shadow: 4px 4px 12px rgba(0, 0, 0, 0.8), 0 0 20px rgba(160, 0, 160, 0.6);
+}
+
+/* --- 历史记录面板样式 --- */
+#history-panel {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.95);
+    color: #f0f0f0;
+    z-index: 100;
+    display: none; /* 默认隐藏 */
+    flex-direction: column;
+    padding: 20px;
+    box-sizing: border-box;
+    backdrop-filter: blur(5px);
+}
+
+.history-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    border-bottom: 2px solid #6a0572;
+    padding-bottom: 10px;
+}
+
+.history-header h2 {
+    font-family: 'Mochiy Pop One', cursive;
+    color: #ffd700;
+    margin: 0;
+    text-shadow: 2px 2px 3px rgba(0, 0, 0, 0.6);
+}
+
+#close-history-button {
+    background-color: #ff4d4d;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    font-size: 1.2em;
+    cursor: pointer;
+    box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.4);
+    transition: background-color 0.2s ease-in-out;
+}
+
+#close-history-button:hover {
+    background-color: #e60000;
+}
+
+#history-content {
+    flex-grow: 1;
+    overflow-y: auto;
+    padding-right: 10px;
+    scrollbar-width: thin;
+    scrollbar-color: #6a0572 #333;
+}
+
+#history-content::-webkit-scrollbar {
+    width: 8px;
+}
+
+#history-content::-webkit-scrollbar-track {
+    background: #333;
+    border-radius: 10px;
+}
+
+#history-content::-webkit-scrollbar-thumb {
+    background-color: #6a0572;
+    border-radius: 10px;

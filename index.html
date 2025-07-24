@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>黑色梦中 AVG</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="game-container">
+        <div id="background"></div>
+
+        <div id="character-sprites-container">
+            <img id="charA_sprite" src="https://scpsandboxcn.wikidot.com/local--files/meowait/anime_girl_4" alt="克莱尔">
+            <img id="charB_sprite" src="https://scpsandboxcn.wikidot.com/local--files/meowait/jiraikei-png" alt="症候">
+            </div>
+
+        <div id="dialogue-box">
+            <p id="speaker-name"></p>
+            <p id="dialogue-text"></p>
+        </div>
+
+        <div id="game-controls">
+            <button id="history-button">查看历史</button>
+            <button id="reset-button">重置</button>
+        </div>
+
+        <div id="history-panel">
+            <div class="history-header">
+                <h2>对话历史</h2>
+                <button id="close-history-button">X</button>
+            </div>
+            <div id="history-content"></div>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
